@@ -1,0 +1,850 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Nest for Etsy</title>
+<meta name="description" content="Save, organise, and share your Etsy finds — a free, private Chrome extension.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Outfit:wght@400;500;600&display=swap">
+
+<style>
+/* Layout: left-aligned editorial flow, feature sections alternate image/text, generous vertical rhythm */
+:root {
+  --bg: #FEFBF6;
+  --bg-card: #F5F0E8;
+  --fg: #2A2420;
+  --fg-muted: #7A716A;
+  --orange: #F1641E;
+  --orange-soft: #FFF0E8;
+  --sage: #6B7F5C;
+  --sage-soft: #E8EDE3;
+  --egg: #7BA3AD;
+  --egg-soft: #E3EEF1;
+  --branch: #5C4A3A;
+  --radius: 12px;
+  --display: 'Fraunces', Georgia, serif;
+  --body: 'Outfit', system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1A1714;
+    --bg-card: #252018;
+    --fg: #E8E2D8;
+    --fg-muted: #9A9088;
+    --orange-soft: #2E1E14;
+    --sage-soft: #1E2418;
+    --egg-soft: #162024;
+    --branch: #B8A898;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1A1714;
+  --bg-card: #252018;
+  --fg: #E8E2D8;
+  --fg-muted: #9A9088;
+  --orange-soft: #2E1E14;
+  --sage-soft: #1E2418;
+  --egg-soft: #162024;
+  --branch: #B8A898;
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.6;
+  padding-inline: 24px;
+  padding-block: 0;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+/* Nav */
+nav {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 0;
+  background: var(--bg);
+}
+nav .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--fg);
+  text-decoration: none;
+}
+nav .logo svg { flex-shrink: 0; }
+nav .links {
+  display: flex;
+  gap: 24px;
+  margin-left: auto;
+  align-items: center;
+}
+nav .links a {
+  color: var(--fg-muted);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+nav .links a:hover { color: var(--fg); }
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 100px;
+  font-family: var(--body);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(241, 100, 30, 0.3);
+}
+
+/* Hero */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  padding: 72px 0 80px;
+}
+.hero-text h1 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(36px, 5vw, 56px);
+  line-height: 1.1;
+  margin: 0 0 20px;
+  text-wrap: balance;
+  letter-spacing: -0.02em;
+}
+.hero-text p {
+  font-size: 19px;
+  color: var(--fg-muted);
+  margin: 0 0 32px;
+  max-width: 440px;
+  line-height: 1.55;
+}
+.hero-badges {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.badge-green { background: var(--sage-soft); color: var(--sage); }
+.badge-blue { background: var(--egg-soft); color: var(--egg); }
+
+/* Hero visual: a fake browser window with nest cards */
+.hero-visual {
+  position: relative;
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 24px 64px rgba(42, 36, 32, 0.08), 0 4px 12px rgba(42, 36, 32, 0.04);
+}
+.browser-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+.browser-dots {
+  display: flex;
+  gap: 6px;
+}
+.browser-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.browser-dots span:nth-child(1) { background: #F87171; }
+.browser-dots span:nth-child(2) { background: #FBBF24; }
+.browser-dots span:nth-child(3) { background: #34D399; }
+.browser-url {
+  flex: 1;
+  background: var(--bg);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--fg-muted);
+  font-family: 'SF Mono', 'Cascadia Mono', monospace;
+}
+
+.mock-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 0 4px 4px;
+}
+.mock-card {
+  background: var(--bg);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.mock-img {
+  aspect-ratio: 1;
+  position: relative;
+}
+.mock-img::after {
+  content: '';
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--orange);
+  opacity: 0.9;
+  box-shadow: 0 2px 6px rgba(241, 100, 30, 0.3);
+}
+.mock-card-body {
+  padding: 8px 10px 10px;
+}
+.mock-title {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.3;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mock-price {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+/* Colour fills for mock images */
+.fill-clay { background: #D4A574; }
+.fill-terracotta { background: #C4786A; }
+.fill-sage { background: #8FA47E; }
+.fill-linen { background: #DDD5C8; }
+.fill-slate { background: #7A8B95; }
+.fill-blush { background: #D4A0A0; }
+
+/* Nest label on hero visual */
+.nest-label {
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--orange);
+  color: #fff;
+  padding: 6px 18px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(241, 100, 30, 0.25);
+}
+
+/* Features */
+.features {
+  padding: 60px 0;
+}
+.features-head {
+  margin-bottom: 56px;
+}
+.features-head h2 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: clamp(28px, 3.5vw, 40px);
+  margin: 0 0 12px;
+  letter-spacing: -0.01em;
+}
+.features-head p {
+  color: var(--fg-muted);
+  font-size: 18px;
+  margin: 0;
+  max-width: 520px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.feature-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  min-width: 0;
+}
+.feature-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+.feature-icon svg { width: 22px; height: 22px; }
+.fi-orange { background: var(--orange-soft); color: var(--orange); }
+.fi-sage { background: var(--sage-soft); color: var(--sage); }
+.fi-egg { background: var(--egg-soft); color: var(--egg); }
+.feature-card h3 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 20px;
+  margin: 0 0 8px;
+}
+.feature-card p {
+  color: var(--fg-muted);
+  font-size: 15px;
+  margin: 0;
+  line-height: 1.55;
+}
+
+/* Big feature: Sharing */
+.sharing {
+  padding: 80px 0;
+}
+.sharing-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+.sharing h2 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: clamp(28px, 3.5vw, 40px);
+  margin: 0 0 16px;
+  letter-spacing: -0.01em;
+}
+.sharing p {
+  color: var(--fg-muted);
+  font-size: 17px;
+  line-height: 1.6;
+  margin: 0 0 16px;
+}
+.sharing-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+.sharing-step {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.step-dot {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--orange-soft);
+  color: var(--orange);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+.sharing-step p {
+  margin: 0;
+  font-size: 15px;
+  color: var(--fg);
+}
+.sharing-step strong {
+  font-weight: 600;
+}
+
+/* Sharing visual: mock share dialog */
+.share-visual {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 16px 48px rgba(42, 36, 32, 0.06);
+}
+.share-mock-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.share-color-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  background: var(--orange);
+}
+.share-mock-header span {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 18px;
+}
+.share-mock-link {
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 12px;
+  color: var(--fg-muted);
+  font-family: 'SF Mono', 'Cascadia Mono', monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 16px;
+}
+.share-mock-btns {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.share-mock-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.smb-primary { background: var(--orange); color: #fff; }
+.smb-secondary { background: var(--bg); color: var(--fg); }
+
+/* Privacy */
+.privacy-section {
+  padding: 80px 0;
+}
+.privacy-card {
+  background: var(--sage-soft);
+  border-radius: 20px;
+  padding: clamp(36px, 5vw, 64px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.privacy-card h2 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: clamp(28px, 3.5vw, 40px);
+  margin: 0 0 16px;
+  letter-spacing: -0.01em;
+}
+.privacy-card p {
+  color: var(--fg-muted);
+  font-size: 17px;
+  margin: 0 0 16px;
+  line-height: 1.6;
+}
+.privacy-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.privacy-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 15px;
+}
+.privacy-check {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--sage);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+.privacy-check svg { width: 12px; height: 12px; }
+
+/* CTA */
+.cta-section {
+  padding: 80px 0;
+  text-align: center;
+}
+.cta-section h2 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(32px, 4vw, 48px);
+  margin: 0 0 16px;
+  letter-spacing: -0.02em;
+}
+.cta-section p {
+  color: var(--fg-muted);
+  font-size: 18px;
+  margin: 0 0 32px;
+}
+.cta-section .btn-primary {
+  font-size: 17px;
+  padding: 14px 32px;
+}
+
+/* Footer */
+footer {
+  border-top: 1px solid var(--bg-card);
+  padding: 32px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+footer .foot-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--fg-muted);
+}
+footer .foot-links {
+  display: flex;
+  gap: 20px;
+}
+footer .foot-links a {
+  color: var(--fg-muted);
+  text-decoration: none;
+  font-size: 14px;
+}
+footer .foot-links a:hover { color: var(--fg); }
+
+/* Keyboard shortcut display */
+kbd {
+  display: inline-block;
+  padding: 2px 7px;
+  font-size: 12px;
+  font-family: 'SF Mono', 'Cascadia Mono', Menlo, monospace;
+  background: var(--bg);
+  border: 1px solid var(--bg-card);
+  border-radius: 4px;
+  box-shadow: 0 1px 0 var(--bg-card);
+  color: var(--fg-muted);
+  vertical-align: middle;
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 48px 0 60px;
+    gap: 40px;
+  }
+  .hero-visual { order: -1; }
+  .feature-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .sharing-layout {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .share-visual { order: -1; }
+  .privacy-card {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  nav .links a.hide-mobile { display: none; }
+  .mock-cards { grid-template-columns: repeat(2, 1fr); }
+  .mock-cards .mock-card:nth-child(n+5) { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-primary { transition: none; }
+  .btn-primary:hover { transform: none; }
+}
+
+:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+</style>
+
+<div class="wrap">
+  <nav>
+    <a href="#" class="logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <circle cx="14" cy="14" r="14" fill="currentColor" style="color: var(--orange)"/>
+        <path d="M8 16.5C8 13 10.5 10 14 10s6 3 6 6.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+        <circle cx="14" cy="16" r="2" fill="#fff"/>
+      </svg>
+      Nest
+    </a>
+    <div class="links">
+      <a href="#features" class="hide-mobile">Features</a>
+      <a href="#privacy" class="hide-mobile">Privacy</a>
+      <a href="https://github.com/wushu75/Nest" class="hide-mobile">GitHub</a>
+      <a href="https://chromewebstore.google.com" class="btn-primary" style="font-size:14px;padding:8px 18px;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 2.5a4.5 4.5 0 110 9 4.5 4.5 0 010-9zM8 5a3 3 0 100 6 3 3 0 000-6z"/></svg>
+        Add to Chrome
+      </a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Your Etsy finds, finally organised</h1>
+      <p>Save listings into beautiful collections, build mood boards, share with friends — no account needed, everything stays on your device.</p>
+      <a href="https://chromewebstore.google.com" class="btn-primary">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 2.5a4.5 4.5 0 110 9 4.5 4.5 0 010-9zM8 5a3 3 0 100 6 3 3 0 000-6z"/></svg>
+        Add to Chrome — it's free
+      </a>
+      <div class="hero-badges">
+        <span class="badge badge-green">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM6.7 10.3L4.5 8.1l1-1 1.2 1.2 3-3 1 1-4 4z"/></svg>
+          Zero tracking
+        </span>
+        <span class="badge badge-green">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM6.7 10.3L4.5 8.1l1-1 1.2 1.2 3-3 1 1-4 4z"/></svg>
+          Open source
+        </span>
+        <span class="badge badge-blue">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM6.7 10.3L4.5 8.1l1-1 1.2 1.2 3-3 1 1-4 4z"/></svg>
+          Manifest V3
+        </span>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">etsy.com/search?q=handmade+ceramic+mug</div>
+      </div>
+      <div class="mock-cards">
+        <div class="mock-card">
+          <div class="mock-img fill-clay"></div>
+          <div class="mock-card-body">
+            <div class="mock-title">Handmade ceramic mug</div>
+            <div class="mock-price">£24.50</div>
+          </div>
+        </div>
+        <div class="mock-card">
+          <div class="mock-img fill-sage"></div>
+          <div class="mock-card-body">
+            <div class="mock-title">Speckled stoneware cup</div>
+            <div class="mock-price">£32.00</div>
+          </div>
+        </div>
+        <div class="mock-card">
+          <div class="mock-img fill-blush"></div>
+          <div class="mock-card-body">
+            <div class="mock-title">Wabi-sabi tea bowl</div>
+            <div class="mock-price">£28.75</div>
+          </div>
+        </div>
+        <div class="mock-card">
+          <div class="mock-img fill-linen"></div>
+          <div class="mock-card-body">
+            <div class="mock-title">Rustic espresso set</div>
+            <div class="mock-price">£45.00</div>
+          </div>
+        </div>
+        <div class="mock-card">
+          <div class="mock-img fill-slate"></div>
+          <div class="mock-card-body">
+            <div class="mock-title">Glazed matcha bowl</div>
+            <div class="mock-price">£19.99</div>
+          </div>
+        </div>
+        <div class="mock-card">
+          <div class="mock-img fill-terracotta"></div>
+          <div class="mock-card-body">
+            <div class="mock-title">Artisan pour-over set</div>
+            <div class="mock-price">£56.00</div>
+          </div>
+        </div>
+      </div>
+      <span class="nest-label">
+        <svg width="14" height="14" viewBox="0 0 28 28" fill="none" style="vertical-align:-2px;margin-right:4px">
+          <path d="M8 16.5C8 13 10.5 10 14 10s6 3 6 6.5" stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <circle cx="14" cy="16" r="2" fill="#fff"/>
+        </svg>
+        3 saved to "Kitchen dreams"
+      </span>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features" id="features">
+    <div class="features-head">
+      <h2>Everything Etsy should have built in</h2>
+      <p>Nest adds the collection, sharing, and discovery tools that Etsy's been missing. Runs entirely in your browser.</p>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon fi-orange">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </div>
+        <h3>One-click save</h3>
+        <p>A save button appears on every Etsy listing card. Press <kbd>N</kbd> to quick-save the item you're looking at. Create colour-coded nests to keep things sorted.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-egg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+        </div>
+        <h3>Share with anyone</h3>
+        <p>Send a link that opens a beautiful viewer in any browser — no extension needed. Or paste a share code. Your data never touches a server.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-sage">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </div>
+        <h3>Mood boards</h3>
+        <p>Drag saved items onto a free-form canvas. Rotate, layer, add colour swatches and notes. Export a crisp 2× PNG when you're happy with it.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-orange">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        </div>
+        <h3>Style matching</h3>
+        <p>Nest learns your taste from what you save and browse — entirely on your device. Get personalised Etsy search suggestions and gift ideas for the people in your life.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-egg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20V10M6 20V4M18 20v-6"/></svg>
+        </div>
+        <h3>Buyer insights</h3>
+        <p>See review summaries, shipping speed, eco-friendliness, and shop signals right on the listing page. Make decisions without scrolling through hundreds of reviews.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-sage">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+        </div>
+        <h3>Price drop alerts</h3>
+        <p>Nest checks your saved items every few hours. If something drops in price or comes back in stock, you get a notification. No email sign-ups, no noise.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sharing deep-dive -->
+  <section class="sharing">
+    <div class="sharing-layout">
+      <div>
+        <h2>Sharing that respects your privacy</h2>
+        <p>Most extensions phone home when you share. Nest takes a different approach: your data is compressed and encoded directly into the link itself.</p>
+        <div class="sharing-steps">
+          <div class="sharing-step">
+            <span class="step-dot">1</span>
+            <p><strong>Pack</strong> — your nest is compressed into a compact array</p>
+          </div>
+          <div class="sharing-step">
+            <span class="step-dot">2</span>
+            <p><strong>Compress</strong> — the browser's built-in deflate shrinks it further</p>
+          </div>
+          <div class="sharing-step">
+            <span class="step-dot">3</span>
+            <p><strong>Fragment</strong> — the data goes in the URL after the <code>#</code>, which browsers never send to servers</p>
+          </div>
+        </div>
+        <p style="margin-top:20px;font-size:15px;">The same data also works as a pasteable <code>nest1.</code> share code — no link required.</p>
+      </div>
+      <div class="share-visual">
+        <div class="share-mock-header">
+          <span class="share-color-dot"></span>
+          <span>Kitchen dreams</span>
+          <span style="margin-left:auto;font-size:14px;color:var(--fg-muted)">6 items</span>
+        </div>
+        <div class="share-mock-link">
+          nest-viewer.pages.dev/#n=eJyrVkrOz0nVUbJSKs9ILUpVsgIA…
+        </div>
+        <div class="share-mock-btns">
+          <span class="share-mock-btn smb-primary">Copy link</span>
+          <span class="share-mock-btn smb-secondary">Share code</span>
+          <span class="share-mock-btn smb-secondary">Export image</span>
+          <span class="share-mock-btn smb-secondary">Download JSON</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Privacy -->
+  <section class="privacy-section" id="privacy">
+    <div class="privacy-card">
+      <div>
+        <h2>Private by design, not by promise</h2>
+        <p>Nest stores everything in your browser's IndexedDB. There's no account, no telemetry, no analytics. The code is open source and you can read every line.</p>
+        <p style="font-size:15px;">Uninstalling the extension deletes all data. You can also export everything as JSON first.</p>
+      </div>
+      <div class="privacy-list">
+        <div class="privacy-item">
+          <span class="privacy-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2.5 6.5L5 9l4.5-6"/></svg></span>
+          <span>No accounts or sign-ups</span>
+        </div>
+        <div class="privacy-item">
+          <span class="privacy-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2.5 6.5L5 9l4.5-6"/></svg></span>
+          <span>No analytics, tracking pixels, or cookies</span>
+        </div>
+        <div class="privacy-item">
+          <span class="privacy-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2.5 6.5L5 9l4.5-6"/></svg></span>
+          <span>Share links never send data to any server</span>
+        </div>
+        <div class="privacy-item">
+          <span class="privacy-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2.5 6.5L5 9l4.5-6"/></svg></span>
+          <span>MIT-licensed, fully open source</span>
+        </div>
+        <div class="privacy-item">
+          <span class="privacy-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2.5 6.5L5 9l4.5-6"/></svg></span>
+          <span>Only talks to Etsy — and only the pages you visit</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="cta-section">
+    <h2>Start nesting</h2>
+    <p>Free forever. No account. Your data stays yours.</p>
+    <a href="https://chromewebstore.google.com" class="btn-primary">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 2.5a4.5 4.5 0 110 9 4.5 4.5 0 010-9zM8 5a3 3 0 100 6 3 3 0 000-6z"/></svg>
+      Add to Chrome
+    </a>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="foot-left">
+      <svg width="18" height="18" viewBox="0 0 28 28" fill="none">
+        <circle cx="14" cy="14" r="14" fill="var(--orange)"/>
+        <path d="M8 16.5C8 13 10.5 10 14 10s6 3 6 6.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+        <circle cx="14" cy="16" r="2" fill="#fff"/>
+      </svg>
+      Nest for Etsy · MIT License
+    </div>
+    <div class="foot-links">
+      <a href="https://github.com/wushu75/Nest">Source code</a>
+      <a href="#">Privacy</a>
+    </div>
+  </footer>
+</div>
+
+</body></html>
